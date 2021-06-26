@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="nb" itemscope itemtype="https://schema.org/Person">
+<meta charset="utf-8">
+<title>Combining and transposing data</title>
+
+<link href="../themes/prism-python.css" rel="stylesheet" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<h2>Combining and transposing data</h2>
+
+Imagine you are working with a time series of sales numbers.
+For each date, we are given som number of tickets sold.
+
+It is not uncommon to be given the  dates and sales numbers as two distinct
+<em>Sequence</em>-s where there is a correspondence between the i-th component
+in each Sequence.
+
+Enter <em>zip</em>!
+
+From <em>python -m pydoc zip</em> we can read:
+
+
+<pre><code class="language-python">Help on class zip in module builtins:
+
+class zip(object)
+ |  zip(*iterables) --> zip object
+ |  
+ |  Return a zip object whose .__next__() method returns a tuple where
+ |  the i-th element comes from the i-th iterable argument.  The .__next__()
+ |  method continues until the shortest iterable in the argument sequence
+ |  is exhausted and then it raises StopIteration.
+</code></pre>
+
+In practical code, combining <em>dates</em> and <em>tickets_sold</em> looks like:
+
+<pre><code class="language-python">>>> import datetime, pprint
+>>> n = 15
+>>> dates = [datetime.date(year=1989, month=8, day=25) + datetime.timedelta(days=i) for i in range(n)]
+>>> tickets_sold = [i ** 2 for i in range(n)]
+>>> table = list(zip(dates, tickets_sold))
+>>> print(table)
+[(datetime.date(1989, 8, 25), 0), (datetime.date(1989, 8, 26), 1), (datetime.date(1989, 8, 27), 4), (datetime.date(1989, 8, 28), 9), (datetime.date(1989, 8, 29), 16), (datetime.date(1989, 8, 30), 25), (datetime.date(1989, 8, 31), 36), (datetime.date(1989, 9, 1), 49), (datetime.date(1989, 9, 2), 64), (datetime.date(1989, 9, 3), 81), (datetime.date(1989, 9, 4), 100), (datetime.date(1989, 9, 5), 121), (datetime.date(1989, 9, 6), 144), (datetime.date(1989, 9, 7), 169), (datetime.date(1989, 9, 8), 196)]
+</code></pre>
+
+So <em>table</em> groups <em>dates[i]</em> with <em>tickets_sold[i]</em> to form <em>n</em> rows. The total dimension of tables is <em>n * 2</em>.
+This is the standard use case for <em>zip</em>, and it is readily understood from its documentation above.
+Now, what is less intuitive is that <em>zip</em> can also be used to invert <em>table</em>.
+
+<pre><code class="language-python">>>> t_table = list(zip(*table))
+>>> pprint.pprint(t_table)
+[(datetime.date(1989, 8, 25),
+  datetime.date(1989, 8, 26),
+  datetime.date(1989, 8, 27),
+  datetime.date(1989, 8, 28),
+  datetime.date(1989, 8, 29),
+  datetime.date(1989, 8, 30),
+  datetime.date(1989, 8, 31),
+  datetime.date(1989, 9, 1),
+  datetime.date(1989, 9, 2),
+  datetime.date(1989, 9, 3),
+  datetime.date(1989, 9, 4),
+  datetime.date(1989, 9, 5),
+  datetime.date(1989, 9, 6),
+  datetime.date(1989, 9, 7),
+  datetime.date(1989, 9, 8)),
+ (0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196)]
+</code></pre>
+
+
+<p>
+Tada! This is <em>table transposed</em>.
+
+<script src="../scripts/prism-python.js"></script>
+</html>
